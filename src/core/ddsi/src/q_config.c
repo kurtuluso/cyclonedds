@@ -22,6 +22,7 @@
 #include "dds/ddsrt/string.h"
 #include "dds/ddsrt/strtod.h"
 #include "dds/ddsrt/misc.h"
+#include "dds/ddsrt/environ.h"
 #include "dds/ddsi/q_config.h"
 #include "dds/ddsi/q_log.h"
 #include "dds/util/ut_avl.h"
@@ -32,7 +33,6 @@
 #include "dds/ddsi/q_error.h"
 
 #include "dds/util/ut_xmlparser.h"
-#include "dds/util/ut_expand_envvars.h"
 
 #include "dds/version.h"
 
@@ -2667,7 +2667,7 @@ static int proc_attr(void *varg, UNUSED_ARG(uintptr_t eleminfo), const char *nam
         return cfg_error(cfgst, "%s: unknown attribute", name);
     else {
         void *parent = cfgst_parent(cfgst);
-        char *xvalue = ut_expand_envvars(value);
+        char *xvalue = ddsrt_expand_envvars(value);
         int ok;
         cfgst_push(cfgst, 1, cfg_attr, parent);
         ok = do_update(cfgst, cfg_attr->update, parent, cfg_attr, xvalue, 0);
@@ -2687,7 +2687,7 @@ static int proc_elem_data(void *varg, UNUSED_ARG(uintptr_t eleminfo), const char
         return cfg_error(cfgst, "%s: no data expected", value);
     else {
         void *parent = cfgst_parent(cfgst);
-        char *xvalue = ut_expand_envvars(value);
+        char *xvalue = ddsrt_expand_envvars(value);
         int ok;
         cfgst_push(cfgst, 0, NULL, parent);
         ok = do_update(cfgst, cfgelem->update, parent, cfgelem, xvalue, 0);

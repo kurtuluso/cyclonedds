@@ -1,5 +1,5 @@
 /*
- * Copyright(c) 2006 to 2018 ADLINK Technology Limited and others
+ * Copyright(c) 2019 ADLINK Technology Limited and others
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -9,19 +9,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
  */
-#include "dds/ddsrt/process.h"
+#include "lib_test_export.h"
 
-#if !defined(_WIN32)
-# include <unistd.h>
-#endif
+static int g_val = -1;
 
-ddsrt_pid_t
-ddsrt_getpid(void)
+LIB_TEST_EXPORT void set_int(int val)
 {
-#if defined(_WIN32)
-    return GetCurrentProcessId();
-#else
-    /* Mapped to taskIdSelf() in VxWorks kernel mode. */
-    return getpid();
-#endif
+  g_val = val;
 }
+
+LIB_TEST_EXPORT int get_int(void)
+{
+  return g_val;
+}
+

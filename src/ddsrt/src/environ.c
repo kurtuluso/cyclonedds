@@ -19,7 +19,6 @@
 #include "dds/ddsrt/heap.h"
 #include "dds/ddsrt/log.h"
 #include "dds/ddsrt/string.h"
-#include "dds/util/ut_expand_envvars.h"
 
 typedef char * (*expand_fn)(const char *src0);
 
@@ -157,10 +156,13 @@ static char *expand_envchar (const char **src, expand_fn expand)
     return expand_env (name, 0, NULL, expand);
 }
 
-char *ut_expand_envvars_sh (const char *src0)
+char *ddsrt_expand_envvars_sh (const char *src0)
 {
     /* Expands $X, ${X}, ${X:-Y}, ${X:+Y}, ${X:?Y} forms; $ and \ can be escaped with \ */
     const char *src = src0;
+    if (!src0) {
+        return NULL;
+    }
     size_t sz = strlen (src) + 1, pos = 0;
     char *dst = ddsrt_malloc (sz);
     while (*src) {
@@ -180,11 +182,11 @@ char *ut_expand_envvars_sh (const char *src0)
                 ddsrt_free(dst);
                 return NULL;
             } else if (*src == '{') {
-                x = expand_envbrace (&src, &ut_expand_envvars_sh);
+                x = expand_envbrace (&src, &ddsrt_expand_envvars_sh);
             } else if (isalnum ((unsigned char) *src) || *src == '_') {
-                x = expand_envsimple (&src, &ut_expand_envvars_sh);
+                x = expand_envsimple (&src, &ddsrt_expand_envvars_sh);
             } else {
-                x = expand_envchar (&src, &ut_expand_envvars_sh);
+                x = expand_envchar (&src, &ddsrt_expand_envvars_sh);
             }
             if (x == NULL) {
                 ddsrt_free(dst);
@@ -203,17 +205,20 @@ char *ut_expand_envvars_sh (const char *src0)
     return dst;
 }
 
-char *ut_expand_envvars (const char *src0)
+char *ddsrt_expand_envvars (const char *src0)
 {
     /* Expands ${X}, ${X:-Y}, ${X:+Y}, ${X:?Y} forms, but not $X */
     const char *src = src0;
+    if (!src0) {
+        return NULL;
+    }
     size_t sz = strlen (src) + 1, pos = 0;
     char *dst = ddsrt_malloc (sz);
     while (*src) {
         if (*src == '$' && *(src + 1) == '{') {
             char *x, *xp;
             src++;
-            x = expand_envbrace (&src, &ut_expand_envvars);
+            x = expand_envbrace (&src, &ddsrt_expand_envvars);
             if (x == NULL) {
                 ddsrt_free(dst);
                 return NULL;

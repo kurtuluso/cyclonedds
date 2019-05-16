@@ -66,6 +66,7 @@ list(APPEND headers
   "${include_path}/dds/ddsrt/misc.h"
   "${include_path}/dds/ddsrt/io.h"
   "${include_path}/dds/ddsrt/process.h"
+  "${include_path}/dds/ddsrt/library.h"
   "${include_path}/dds/ddsrt/strtod.h"
   "${include_path}/dds/ddsrt/strtol.h"
   "${include_path}/dds/ddsrt/types.h")
@@ -73,8 +74,8 @@ list(APPEND headers
 list(APPEND sources
   "${source_path}/io.c"
   "${source_path}/log.c"
+  "${source_path}/environ.c"
   "${source_path}/retcode.c"
-  "${source_path}/process.c"
   "${source_path}/strtod.c"
   "${source_path}/strtol.c")
 
@@ -89,7 +90,7 @@ list(APPEND sources
 # network stack. In order to mix-and-match various compilers, architectures,
 # operating systems, etc input from the build system is required.
 foreach(feature atomics cdtors environ heap ifaddrs random rusage
-                sockets string sync threads time md5)
+                sockets string sync threads time md5 process library)
   if(EXISTS "${include_path}/dds/ddsrt/${feature}.h")
     list(APPEND headers "${include_path}/dds/ddsrt/${feature}.h")
     file(GLOB
@@ -163,6 +164,7 @@ target_sources(ddsrt INTERFACE ${sources})
 set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
 find_package(Threads REQUIRED)
 target_link_libraries(ddsrt INTERFACE Threads::Threads)
+target_link_libraries(ddsrt INTERFACE ${CMAKE_DL_LIBS})
 
 if(WIN32)
   target_link_libraries(ddsrt INTERFACE wsock32 ws2_32 iphlpapi)
