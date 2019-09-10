@@ -16,11 +16,10 @@
 #include "dds_security_api_defs.h"
 #include "stdint.h"
 
+
 #if defined (__cplusplus)
 extern "C" {
 #endif
-
-
 
 /**************************************************************************
  *                                                                        *
