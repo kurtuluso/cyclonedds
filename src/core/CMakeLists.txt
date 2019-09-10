@@ -50,7 +50,7 @@ endif()
 include(ddsi/CMakeLists.txt)
 include(ddsc/CMakeLists.txt)
 
-target_link_libraries(ddsc PRIVATE ddsrt security_api)
+target_link_libraries(ddsc PRIVATE ddsrt security_core security_api)
 
 target_compile_definitions(
   ddsc PUBLIC
