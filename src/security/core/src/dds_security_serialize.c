@@ -100,17 +100,17 @@
 #define bswap4(x) ((int) bswap4u_ ((unsigned) (x)))
 #define bswap8(x) ((long long) bswap8u_ ((unsigned long long) (x)))
 
-unsigned short bswap2u_ (unsigned short x)
+static unsigned short bswap2u_ (unsigned short x)
 {
   return (unsigned short) ((x >> 8) | (x << 8));
 }
 
-unsigned bswap4u_ (unsigned x)
+static unsigned bswap4u_ (unsigned x)
 {
   return (x >> 24) | ((x >> 8) & 0xff00) | ((x << 8) & 0xff0000) | (x << 24);
 }
 
-unsigned long long bswap8u_ (unsigned long long x)
+static unsigned long long bswap8u_ (unsigned long long x)
 {
   const unsigned newhi = bswap4u_ ((unsigned) x);
   const unsigned newlo = bswap4u_ ((unsigned) (x >> 32));
@@ -268,7 +268,7 @@ DDS_Security_Serialize_update_len(
     *(unsigned short *)&(ser->buffer[ser->marker]) = toBE2u(len);
 }
 
-void
+static void
 DDS_Security_Serialize_uint8(
      DDS_Security_Serializer serializer,
      unsigned char value)
@@ -279,7 +279,7 @@ DDS_Security_Serialize_uint8(
     serializer->offset++;
 }
 
-void
+static void
 DDS_Security_Serialize_uint16(
      DDS_Security_Serializer ser,
      unsigned short value)
@@ -291,7 +291,7 @@ DDS_Security_Serialize_uint16(
     ser->offset += sizeof(unsigned short);
 }
 
-void
+static void
 DDS_Security_Serialize_uint32_t(
      DDS_Security_Serializer ser,
      uint32_t value)
@@ -303,7 +303,7 @@ DDS_Security_Serialize_uint32_t(
     ser->offset += sizeof(uint32_t);
 }
 
-void
+static void
 DDS_Security_Serialize_string(
      DDS_Security_Serializer ser,
      const char *str)
@@ -320,7 +320,7 @@ DDS_Security_Serialize_string(
     serbuffer_align(ser, sizeof(uint32_t));
 }
 
-void
+static void
 DDS_Security_Serialize_Property(
      DDS_Security_Serializer ser,
      const DDS_Security_Property_t *property)
@@ -329,7 +329,7 @@ DDS_Security_Serialize_Property(
     DDS_Security_Serialize_string(ser, property->value);
 }
 
-void
+static void
 DDS_Security_Serialize_OctetSeq(
      DDS_Security_Serializer ser,
      const DDS_Security_OctetSeq *seq)
@@ -340,7 +340,7 @@ DDS_Security_Serialize_OctetSeq(
      ser->offset += seq->_length;
 }
 
-void
+static void
 DDS_Security_Serialize_BinaryProperty(
      DDS_Security_Serializer ser,
      const DDS_Security_BinaryProperty_t *property)
@@ -390,7 +390,7 @@ DDS_Security_Serialize_BinaryPropertySeq(
 }
 
 
-void
+static void
 DDS_Security_Serialize_DataHolder(
      DDS_Security_Serializer ser,
      const DDS_Security_DataHolder *holder)
@@ -413,7 +413,7 @@ DDS_Security_Serialize_DataholderSeq(
     }
 }
 
-void
+static void
 DDS_Security_Serialize_BuiltinTopicKey(
      DDS_Security_Serializer ser,
      DDS_Security_BuiltinTopicKey_t key)
@@ -428,7 +428,7 @@ DDS_Security_Serialize_BuiltinTopicKey(
     DDS_Security_Serialize_uint32_t(ser, 0);
 }
 
-void
+static void
 DDS_Security_Serialize_UserDataQosPolicy(
      DDS_Security_Serializer ser,
      DDS_Security_OctetSeq *seq)
@@ -441,7 +441,7 @@ DDS_Security_Serialize_UserDataQosPolicy(
     }
 }
 
-void
+static void
 DDS_Security_Serialize_IdentityToken(
      DDS_Security_Serializer ser,
      DDS_Security_IdentityToken *token)
@@ -453,7 +453,7 @@ DDS_Security_Serialize_IdentityToken(
     DDS_Security_Serialize_update_len(ser);
 }
 
-void
+static void
 DDS_Security_Serialize_PermissionsToken(
      DDS_Security_Serializer ser,
      DDS_Security_PermissionsToken *token)
@@ -465,7 +465,7 @@ DDS_Security_Serialize_PermissionsToken(
     DDS_Security_Serialize_update_len(ser);
 }
 
-void
+static void
 DDS_Security_Serialize_PropertyQosPolicy(
      DDS_Security_Serializer ser,
      DDS_Security_PropertyQosPolicy *policy)
@@ -478,7 +478,7 @@ DDS_Security_Serialize_PropertyQosPolicy(
     DDS_Security_Serialize_update_len(ser);
 }
 
-void
+static void
 DDS_Security_Serialize_ParticipantSecurityInfo(
      DDS_Security_Serializer ser,
      DDS_Security_ParticipantSecurityInfo *info)

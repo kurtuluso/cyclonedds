@@ -29,7 +29,7 @@ load_plugin(
         const char *name_init,
         const char *name_fini)
 {
-    dds_retcode_t result;
+    dds_return_t result;
     void *plugin = NULL;
     assert(info);
 
@@ -111,7 +111,7 @@ static void
 unload_plugin(
         struct plugin_info *info)
 {
-    dds_retcode_t result;
+    dds_return_t result;
     assert(info);
 
     if (info->lib_handle) {
