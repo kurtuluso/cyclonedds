@@ -15,7 +15,7 @@ include (CUnit)
 set(security_plugin_loading_test_sources
     "plugin_loading.c"
   )
-add_definitions(-DDDSI_INCLUDE_SECURITY)
+
 add_cunit_executable(cunit_security_plugin_loading ${security_plugin_loading_test_sources})
 target_include_directories(
   cunit_security_plugin_loading PRIVATE
