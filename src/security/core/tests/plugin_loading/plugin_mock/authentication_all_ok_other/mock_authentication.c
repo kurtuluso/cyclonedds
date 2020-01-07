@@ -13,6 +13,7 @@
 #include "dds/security/dds_security_api.h"
 #include "dds/ddsrt/heap.h"
 #include "dds/ddsrt/misc.h"
+#include "dds/ddsrt/string.h"
 #include "mock_authentication.h"
 #include <stdio.h>
 #include <string.h>
@@ -38,14 +39,6 @@ DDS_Security_ValidationResult_t validate_local_identity(
      DDS_Security_SecurityException *ex)
 {
 
-  unsigned i;
-  DDS_Security_ValidationResult_t result=DDS_SECURITY_VALIDATION_OK;
-  dds_security_authentication_impl *implementation =
-      (dds_security_authentication_impl *) instance;
-  char *identity_ca = NULL;
-  char *identity_certificate = NULL;
-  char *private_key = NULL;
-
   DDSRT_UNUSED_ARG(local_identity_handle);
   DDSRT_UNUSED_ARG(adjusted_participant_guid);
   DDSRT_UNUSED_ARG(domain_id);
@@ -54,47 +47,11 @@ DDS_Security_ValidationResult_t validate_local_identity(
   DDSRT_UNUSED_ARG(ex);
   DDSRT_UNUSED_ARG(instance);
 
-  implementation->id = 2;
+  ex->message = ddsrt_strdup("Certificate expired");
+  ex->code = DDS_SECURITY_ERR_CERT_EXPIRED_CODE;
+  ex->minor_code = 0;
 
-  memcpy(adjusted_participant_guid, candidate_participant_guid, sizeof(DDS_Security_GUID_t));
-
-  for( i=0; i< participant_qos->property.value._length; i++)
-  {
-
-    //printf("%s: %s",participant_qos->property.value._buffer[i].name, participant_qos->property.value._buffer[i].value);
-    printf("%s\n",participant_qos->property.value._buffer[i].name);
-    if( strcmp(participant_qos->property.value._buffer[i].name, "dds.sec.auth.private_key") == 0)
-    {
-      private_key = participant_qos->property.value._buffer[i].value;
-    } else if( strcmp(participant_qos->property.value._buffer[i].name, "dds.sec.auth.identity_ca") == 0)
-    {
-      identity_ca = participant_qos->property.value._buffer[i].value;
-    } else if( strcmp(participant_qos->property.value._buffer[i].name, "dds.sec.auth.identity_certificate") == 0)
-    {
-      identity_certificate = participant_qos->property.value._buffer[i].value;
-    }
-  }
-
-  if( strcmp(identity_certificate, test_identity_certificate) != 0){
-
-    result = DDS_SECURITY_VALIDATION_FAILED;
-    printf("FAILED: Could not get identity_certificate value properly\n");
-  }
-  else if( strcmp(identity_ca, test_ca_certificate) != 0){
-    printf("FAILED: Could not get identity_ca value properly\n");
-    result = DDS_SECURITY_VALIDATION_FAILED;
-  }else if( strcmp(private_key, test_privatekey) != 0){
-    printf("FAILED: Could not get private_key value properly\n");
-    result = DDS_SECURITY_VALIDATION_FAILED;
-  }
-
-  if( result == DDS_SECURITY_VALIDATION_OK )
-  {
-    printf("DDS_SECURITY_VALIDATION_OK\n");
-  }
-
-
-  return result;
+  return DDS_SECURITY_VALIDATION_FAILED;
 }
 
 DDS_Security_boolean get_identity_token(dds_security_authentication *instance,

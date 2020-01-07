@@ -94,9 +94,6 @@ static void logger(void *ptr, const dds_log_data_t *data) {
           found |= (uint32_t)(1 << i);
       }
   }
-  if (print_log) {
-    printf("found: %d\n", found);
-  }
 }
 
 
@@ -712,7 +709,6 @@ CU_Test(ddssec_security_plugin_loading, empty_plugin_property_with_props, .init 
 
   /* Create participant with security config in qos. */
   found = 0;
-  print_log = true;
   ddsrt_setenv(URI_VARIABLE, "<Tracing><Verbosity>finest</></>");
   participant = dds_create_participant(DDS_DOMAIN_DEFAULT, qos, NULL);
   dds_set_log_sink(NULL, NULL);
@@ -777,7 +773,6 @@ CU_Test(ddssec_security_plugin_loading, missing_security_property_with_props, .i
 
   /* Create participant with security config in qos. */
   found = 0;
-  print_log = true;
   ddsrt_setenv(URI_VARIABLE, "<Tracing><Verbosity>finest</></>");
   participant = dds_create_participant(DDS_DOMAIN_DEFAULT, qos, NULL);
   dds_set_log_sink(NULL, NULL);
