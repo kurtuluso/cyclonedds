@@ -648,16 +648,16 @@ decode_rtps_message(
   return NN_RTPS_MSG_STATE_PLAIN;
 }
 
-inline dds_return_t q_omg_security_load( UNUSED_ARG( dds_security_context *security_context ), UNUSED_ARG( const dds_qos_t *property_seq) )
+inline dds_return_t q_omg_security_load( UNUSED_ARG( struct dds_security_context *security_context ), UNUSED_ARG( const dds_qos_t *property_seq) )
 {
   return DDS_RETCODE_ERROR;
 }
 
-inline void q_omg_security_init( UNUSED_ARG( security_context *sc) ) {}
+inline void q_omg_security_init( UNUSED_ARG( struct dds_security_context *sc) ) {}
 
-inline void q_omg_security_deinit( UNUSED_ARG( security_context *sc) ) {}
+inline void q_omg_security_deinit( UNUSED_ARG( struct dds_security_context *sc) ) {}
 
-inline bool q_omg_is_security_loaded(  UNUSED_ARG( dds_security_context *sc )) { return false; }
+inline bool q_omg_is_security_loaded(  UNUSED_ARG( struct dds_security_context *sc )) { return false; }
 
 #endif /* DDSI_INCLUDE_SECURITY */
 
