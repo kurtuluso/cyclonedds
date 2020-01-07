@@ -682,6 +682,10 @@ dds_return_t new_participant_guid (const ddsi_guid_t *ppguid, struct q_globals *
         ret = DDS_RETCODE_NOT_ALLOWED_BY_SECURITY;
         goto new_pp_err_secprop;
       }
+    } else {
+      GVLOGDISC ("new_participant("
+                               PGUIDFMT
+                               "): security is already loaded for this domain\n", PGUID(*ppguid));
     }
   }
 

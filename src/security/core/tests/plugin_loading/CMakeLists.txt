@@ -117,6 +117,7 @@ endfunction()
 
 #PLUGIN MOCKS
 add_mock( authentication authentication_all_ok )
+add_mock( authentication authentication_all_ok_other )
 add_mock( authentication authentication_missing_function )
 add_mock( authentication authentication_finalize_error )
 add_mock( access_control access_control_all_ok )
