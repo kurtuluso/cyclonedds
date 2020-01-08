@@ -31,8 +31,6 @@
 #include "dds/ddsrt/heap.h"
 #include "dds/ddsrt/string.h"
 #include "dds/ddsrt/sync.h"
-#include "dds/ddsi/q_ephash.h"
-
 
 #include "dds/security/dds_security_api.h"
 #include "dds/security/core/dds_security_utils.h"
@@ -913,7 +911,7 @@ encode_datareader_submsg(
   struct proxy_writer *pwr,
   const struct ddsi_guid *rd_guid)
 {
-  struct reader *rd = ephash_lookup_reader_guid(pwr->e.gv->guid_hash, rd_guid);
+  struct reader *rd = entidx_lookup_reader_guid(pwr->e.gv->entity_index, rd_guid);
   struct participant *pp = NULL;
   /* Only encode when needed. */
   if( rd != NULL ){
