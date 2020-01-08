@@ -8,7 +8,7 @@
 #ifndef SECURITY_BUILTIN_PLUGINS_AUTHENTICATION_H_
 #define SECURITY_BUILTIN_PLUGINS_AUTHENTICATION_H_
 
-#include "dds/security/authentication_all_ok_export.h"
+#include "dds/security/authentication_all_ok_other_export.h"
 
 SECURITY_EXPORT int32_t
 init_authentication(const char *argument, void **context);
