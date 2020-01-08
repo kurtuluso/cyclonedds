@@ -1419,4 +1419,87 @@ secure_conn_write(
   return ret;
 }
 
+#else /* DDSI_INCLUDE_SECURITY */
+
+#include "dds/ddsi/ddsi_security_omg.h"
+
+extern inline bool q_omg_security_enabled(void);
+
+extern inline bool q_omg_participant_is_secure(
+  UNUSED_ARG(const struct participant *pp));
+
+extern inline unsigned determine_subscription_writer(
+  UNUSED_ARG(const struct reader *rd));
+
+extern inline unsigned determine_publication_writer(
+  UNUSED_ARG(const struct writer *wr));
+
+extern inline bool is_proxy_participant_deletion_allowed(
+  UNUSED_ARG(struct q_globals * const gv),
+  UNUSED_ARG(const struct ddsi_guid *guid),
+  UNUSED_ARG(const ddsi_entityid_t pwr_entityid));
+
+extern inline void set_proxy_participant_security_info(
+  UNUSED_ARG(struct proxy_participant *prd),
+  UNUSED_ARG(const nn_plist_t *plist));
+
+extern inline void set_proxy_reader_security_info(
+  UNUSED_ARG(struct proxy_reader *prd),
+  UNUSED_ARG(const nn_plist_t *plist));
+
+extern inline void set_proxy_writer_security_info(
+  UNUSED_ARG(struct proxy_writer *pwr),
+  UNUSED_ARG(const nn_plist_t *plist));
+
+extern inline bool decode_Data(
+  UNUSED_ARG(const struct q_globals *gv),
+  UNUSED_ARG(struct nn_rsample_info *sampleinfo),
+  UNUSED_ARG(unsigned char *payloadp),
+  UNUSED_ARG(uint32_t payloadsz),
+  UNUSED_ARG(size_t *submsg_len));
+
+extern inline bool decode_DataFrag(
+  UNUSED_ARG(const struct q_globals *gv),
+  UNUSED_ARG(struct nn_rsample_info *sampleinfo),
+  UNUSED_ARG(unsigned char *payloadp),
+  UNUSED_ARG(uint32_t payloadsz),
+  UNUSED_ARG(size_t *submsg_len));
+
+extern inline void encode_datareader_submsg(
+  UNUSED_ARG(struct nn_xmsg *msg),
+  UNUSED_ARG(struct nn_xmsg_marker sm_marker),
+  UNUSED_ARG(struct proxy_writer *pwr),
+  UNUSED_ARG(const struct ddsi_guid *rd_guid));
+
+extern inline void encode_datawriter_submsg(
+  UNUSED_ARG(struct nn_xmsg *msg),
+  UNUSED_ARG(struct nn_xmsg_marker sm_marker),
+  UNUSED_ARG(struct writer *wr));
+
+extern inline bool validate_msg_decoding(
+  UNUSED_ARG(const struct entity_common *e),
+  UNUSED_ARG(const struct proxy_endpoint_common *c),
+  UNUSED_ARG(struct proxy_participant *proxypp),
+  UNUSED_ARG(struct receiver_state *rst),
+  UNUSED_ARG(SubmessageKind_t prev_smid));
+
+extern inline int decode_SecPrefix(
+  UNUSED_ARG(struct receiver_state *rst),
+  UNUSED_ARG(unsigned char *submsg),
+  UNUSED_ARG(size_t submsg_size),
+  UNUSED_ARG(unsigned char * const msg_end),
+  UNUSED_ARG(const ddsi_guid_prefix_t * const src_prefix),
+  UNUSED_ARG(const ddsi_guid_prefix_t * const dst_prefix),
+  UNUSED_ARG(int byteswap));
+
+extern inline nn_rtps_msg_state_t decode_rtps_message(
+  UNUSED_ARG(struct thread_state1 * const ts1),
+  UNUSED_ARG(struct q_globals *gv),
+  UNUSED_ARG(struct nn_rmsg **rmsg),
+  UNUSED_ARG(Header_t **hdr),
+  UNUSED_ARG(unsigned char **buff),
+  UNUSED_ARG(ssize_t *sz),
+  UNUSED_ARG(struct nn_rbufpool *rbpool),
+  UNUSED_ARG(bool isstream));
+
 #endif /* DDSI_INCLUDE_SECURITY */
