@@ -918,35 +918,31 @@ encode_datareader_submsg(
     pp = rd->c.pp;
   }
   /* Only encode when needed. */
-  if (!pp && q_omg_participant_is_secure( pp ))
-  {
+  if (!pp && q_omg_participant_is_secure( pp )) {
 
-    if (q_omg_reader_is_submessage_protected(rd))
-    {
+    if (q_omg_reader_is_submessage_protected(rd)) {
       unsigned char *src_buf;
-      unsigned int   src_len;
+      unsigned int src_len;
       unsigned char *dst_buf;
-      unsigned int   dst_len;
+      unsigned int dst_len;
 
-    /* Make one blob of the current sub-message by appending the serialized payload. */
-    nn_xmsg_submsg_append_refd_payload(msg, sm_marker);
+      /* Make one blob of the current sub-message by appending the serialized payload. */
+      nn_xmsg_submsg_append_refd_payload(msg, sm_marker);
 
-    /* Get the sub-message buffer. */
-    src_buf = (unsigned char*)nn_xmsg_submsg_from_marker(msg, sm_marker);
-    src_len = (unsigned int)nn_xmsg_submsg_size(msg, sm_marker);
+      /* Get the sub-message buffer. */
+      src_buf = (unsigned char *) nn_xmsg_submsg_from_marker(msg, sm_marker);
+      src_len = (unsigned int) nn_xmsg_submsg_size(msg, sm_marker);
 
-    /* Do the actual encryption. */
-    if (q_omg_security_encode_datareader_submessage(rd, &(pwr->e.guid.prefix), src_buf, src_len, &dst_buf, &dst_len))
-    {
-      /* Replace the old sub-message with the new encoded one(s). */
-      nn_xmsg_submsg_replace(msg, sm_marker, dst_buf, dst_len);
-      ddsrt_free(dst_buf);
-    }
-    else
-    {
-      /* The sub-message should have been encoded, which failed.
-       * Remove it to prevent it from being send. */
-      nn_xmsg_submsg_remove(msg, sm_marker);
+      /* Do the actual encryption. */
+      if (q_omg_security_encode_datareader_submessage(rd, &(pwr->e.guid.prefix), src_buf, src_len, &dst_buf, &dst_len)) {
+        /* Replace the old sub-message with the new encoded one(s). */
+        nn_xmsg_submsg_replace(msg, sm_marker, dst_buf, dst_len);
+        ddsrt_free(dst_buf);
+      } else {
+        /* The sub-message should have been encoded, which failed.
+         * Remove it to prevent it from being send. */
+        nn_xmsg_submsg_remove(msg, sm_marker);
+      }
     }
   }
 }
@@ -1422,8 +1418,6 @@ secure_conn_write(
 #else /* DDSI_INCLUDE_SECURITY */
 
 #include "dds/ddsi/ddsi_security_omg.h"
-
-extern inline bool q_omg_security_enabled(void);
 
 extern inline bool q_omg_participant_is_secure(
   UNUSED_ARG(const struct participant *pp));
