@@ -22,6 +22,7 @@
 #include "dds/ddsi/q_bswap.h"
 #include "dds/ddsi/q_unused.h"
 #include "dds/ddsi/q_radmin.h"
+#include "dds/ddsi/ddsi_entity_index.h"
 #include "dds/ddsi/ddsi_security_omg.h"
 #include "dds/ddsi/ddsi_sertopic.h"
 
@@ -456,7 +457,7 @@ is_proxy_participant_deletion_allowed(
 
   /* Not from a secure proxy writer.
    * Only allow deletion when proxy participant is not authenticated. */
-  proxypp = ephash_lookup_proxy_participant_guid(gv->guid_hash, guid);
+  proxypp = entidx_lookup_proxy_participant_guid(gv->entity_index, guid);
   if (!proxypp)
   {
     GVLOGDISC (" unknown");
@@ -920,8 +921,7 @@ encode_datareader_submsg(
   }
   if (!pp && q_omg_participant_is_secure( pp ))
   {
-    if (q_omg_reader_is_submessage_protected(rd))
-    {
+    if (q_omg_reader_is_submessage_protected(rd)) {
       unsigned char *src_buf;
       unsigned int   src_len;
       unsigned char *dst_buf;
@@ -1219,7 +1219,7 @@ check_rtps_message_is_secure(
 
     GVTRACE(" from "PGUIDFMT, PGUID(guid));
 
-    *proxypp = ephash_lookup_proxy_participant_guid(gv->guid_hash, &guid);
+    *proxypp = entidx_lookup_proxy_participant_guid(gv->entity_index, &guid);
     if (*proxypp)
     {
       if (q_omg_proxyparticipant_is_authenticated(*proxypp))
@@ -1422,8 +1422,6 @@ secure_conn_write(
 #else /* DDSI_INCLUDE_SECURITY */
 
 #include "dds/ddsi/ddsi_security_omg.h"
-
-extern inline bool q_omg_security_enabled(void);
 
 extern inline bool q_omg_participant_is_secure(
   UNUSED_ARG(const struct participant *pp));
