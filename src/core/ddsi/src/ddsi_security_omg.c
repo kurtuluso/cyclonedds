@@ -22,6 +22,7 @@
 #include "dds/ddsi/q_bswap.h"
 #include "dds/ddsi/q_unused.h"
 #include "dds/ddsi/q_radmin.h"
+#include "dds/ddsi/ddsi_entity_index.h"
 #include "dds/ddsi/ddsi_security_omg.h"
 #include "dds/ddsi/ddsi_sertopic.h"
 
@@ -30,8 +31,6 @@
 #include "dds/ddsrt/heap.h"
 #include "dds/ddsrt/string.h"
 #include "dds/ddsrt/sync.h"
-#include "dds/ddsi/q_ephash.h"
-
 
 #include "dds/security/dds_security_api.h"
 #include "dds/security/core/dds_security_utils.h"
@@ -456,7 +455,7 @@ is_proxy_participant_deletion_allowed(
 
   /* Not from a secure proxy writer.
    * Only allow deletion when proxy participant is not authenticated. */
-  proxypp = ephash_lookup_proxy_participant_guid(gv->guid_hash, guid);
+  proxypp = entidx_lookup_proxy_participant_guid(gv->entity_index, guid);
   if (!proxypp)
   {
     GVLOGDISC (" unknown");
@@ -912,14 +911,16 @@ encode_datareader_submsg(
   struct proxy_writer *pwr,
   const struct ddsi_guid *rd_guid)
 {
-  struct reader *rd = ephash_lookup_reader_guid(pwr->e.gv->guid_hash, rd_guid);
+  struct reader *rd = entidx_lookup_reader_guid(pwr->e.gv->entity_index, rd_guid);
   struct participant *pp = NULL;
-  /* Only encode when needed. */
+
   if( rd != NULL ){
     pp = rd->c.pp;
   }
+  /* Only encode when needed. */
   if (!pp && q_omg_participant_is_secure( pp ))
   {
+
     if (q_omg_reader_is_submessage_protected(rd))
     {
       unsigned char *src_buf;
@@ -927,26 +928,25 @@ encode_datareader_submsg(
       unsigned char *dst_buf;
       unsigned int   dst_len;
 
-      /* Make one blob of the current sub-message by appending the serialized payload. */
-      nn_xmsg_submsg_append_refd_payload(msg, sm_marker);
+    /* Make one blob of the current sub-message by appending the serialized payload. */
+    nn_xmsg_submsg_append_refd_payload(msg, sm_marker);
 
-      /* Get the sub-message buffer. */
-      src_buf = (unsigned char*)nn_xmsg_submsg_from_marker(msg, sm_marker);
-      src_len = (unsigned int)nn_xmsg_submsg_size(msg, sm_marker);
+    /* Get the sub-message buffer. */
+    src_buf = (unsigned char*)nn_xmsg_submsg_from_marker(msg, sm_marker);
+    src_len = (unsigned int)nn_xmsg_submsg_size(msg, sm_marker);
 
-      /* Do the actual encryption. */
-      if (q_omg_security_encode_datareader_submessage(rd, &(pwr->e.guid.prefix), src_buf, src_len, &dst_buf, &dst_len))
-      {
-        /* Replace the old sub-message with the new encoded one(s). */
-        nn_xmsg_submsg_replace(msg, sm_marker, dst_buf, dst_len);
-        ddsrt_free(dst_buf);
-      }
-      else
-      {
-        /* The sub-message should have been encoded, which failed.
-         * Remove it to prevent it from being send. */
-        nn_xmsg_submsg_remove(msg, sm_marker);
-      }
+    /* Do the actual encryption. */
+    if (q_omg_security_encode_datareader_submessage(rd, &(pwr->e.guid.prefix), src_buf, src_len, &dst_buf, &dst_len))
+    {
+      /* Replace the old sub-message with the new encoded one(s). */
+      nn_xmsg_submsg_replace(msg, sm_marker, dst_buf, dst_len);
+      ddsrt_free(dst_buf);
+    }
+    else
+    {
+      /* The sub-message should have been encoded, which failed.
+       * Remove it to prevent it from being send. */
+      nn_xmsg_submsg_remove(msg, sm_marker);
     }
   }
 }
@@ -1219,7 +1219,7 @@ check_rtps_message_is_secure(
 
     GVTRACE(" from "PGUIDFMT, PGUID(guid));
 
-    *proxypp = ephash_lookup_proxy_participant_guid(gv->guid_hash, &guid);
+    *proxypp = entidx_lookup_proxy_participant_guid(gv->entity_index, &guid);
     if (*proxypp)
     {
       if (q_omg_proxyparticipant_is_authenticated(*proxypp))

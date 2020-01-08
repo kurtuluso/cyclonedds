@@ -1288,9 +1288,12 @@ static void dds_stream_extract_key_from_key_prim_op (dds_istream_t * __restrict 
 #if DDSRT_ENDIAN == DDSRT_LITTLE_ENDIAN
 static void dds_stream_swap_copy (void * __restrict vdst, const void * __restrict vsrc, uint32_t size, uint32_t num)
 {
-  assert (size == 2 || size == 4 || size == 8);
+  assert (size == 1 || size == 2 || size == 4 || size == 8);
   switch (size)
   {
+    case 1:
+      memcpy (vdst, vsrc, num);
+      break;
     case 2: {
       const uint16_t *src = vsrc;
       uint16_t *dst = vdst;
@@ -1342,7 +1345,7 @@ static void dds_stream_extract_keyBE_from_key_prim_op (dds_istream_t * __restric
       void const * const src = is->m_buffer + is->m_index;
       void * const dst = os->x.m_buffer + os->x.m_index;
 #if DDSRT_ENDIAN == DDSRT_LITTLE_ENDIAN
-      dds_stream_swap_copy (dst, src, num, align);
+      dds_stream_swap_copy (dst, src, align, num);
 #else
       memcpy (dst, src, num * align);
 #endif
@@ -1579,7 +1582,10 @@ void dds_stream_extract_keyhash (dds_istream_t * __restrict is, dds_keyhash_t * 
   const dds_topic_descriptor_t *desc = topic->type;
   kh->m_set = 1;
   if (desc->m_nkeys == 0)
+  {
     kh->m_iskey = 1;
+    kh->m_keysize = 0;
+  }
   else if (desc->m_flagset & DDS_TOPIC_FIXED_KEY)
   {
     dds_ostreamBE_t os;
@@ -1592,12 +1598,14 @@ void dds_stream_extract_keyhash (dds_istream_t * __restrict is, dds_keyhash_t * 
     else
       dds_stream_extract_keyBE_from_data (is, &os, topic);
     assert (os.x.m_index <= 16);
+    kh->m_keysize = (unsigned)os.x.m_index & 0x1f;
   }
   else
   {
     dds_ostreamBE_t os;
     ddsrt_md5_state_t md5st;
     kh->m_iskey = 0;
+    kh->m_keysize = 16;
     dds_ostreamBE_init (&os, 0);
     if (just_key)
       dds_stream_extract_keyBE_from_key (is, &os, topic);
@@ -1717,7 +1725,7 @@ static bool prtf_simple_array (char * __restrict *buf, size_t * __restrict bufsi
       abort ();
       break;
   }
-  return cont;
+  return prtf (buf, bufsize, "}");
 }
 
 static bool dds_stream_print_sample1 (char * __restrict *buf, size_t * __restrict bufsize, dds_istream_t * __restrict is, const uint32_t * __restrict ops, bool add_braces);
